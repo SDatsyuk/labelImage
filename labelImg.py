@@ -783,10 +783,11 @@ class MainWindow(QMainWindow, WindowMixin):
         if shape is None:
             # print('rm empty label')
             return
-        item = self.shapesToItems[shape]
-        self.labelList.takeItem(self.labelList.row(item))
-        del self.shapesToItems[shape]
-        del self.itemsToShapes[item]
+        for s in shape:
+            item = self.shapesToItems[s]
+            self.labelList.takeItem(self.labelList.row(item))
+            del self.shapesToItems[s]
+            del self.itemsToShapes[item]
 
     def loadLabels(self, shapes):
         s = []
