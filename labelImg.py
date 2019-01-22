@@ -580,6 +580,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.statusBar().showMessage(message, delay)
 
     def resetState(self):
+        print('resetState')
         self.itemsToShapes.clear()
         self.shapesToItems.clear()
         self.labelList.clear()
@@ -591,6 +592,7 @@ class MainWindow(QMainWindow, WindowMixin):
 
     def currentItem(self):
         items = self.labelList.selectedItems()
+        print("Items: ", items)
         if items:
             return items[0]
         return None
@@ -679,6 +681,9 @@ class MainWindow(QMainWindow, WindowMixin):
             return
         item = self.currentItem()
         # items = self.canvas.selectedShape
+        print(self.labelList)
+        print(self.labelList.selectedItems())
+        # print(item)
         text = self.labelDialog.popUp(item.text())
         if text is not None:
             print(self.labelList.selectedItems())
@@ -744,7 +749,6 @@ class MainWindow(QMainWindow, WindowMixin):
                 for i in shape: 
                     # print(dir(self.shapesToItems[i]))
                     self.shapesToItems[i].setSelected(True)
-                print('out of iter')
             else:
                 self.labelList.clearSelection()
         self.actions.delete.setEnabled(selected)
@@ -754,6 +758,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.actions.shapeFillColor.setEnabled(selected)
 
     def addLabel(self, shape):
+        print(shape)
         if isinstance(shape, list):
             for s in shape:
                 s.paintLabel = self.paintLabelsOption.isChecked()
@@ -765,9 +770,11 @@ class MainWindow(QMainWindow, WindowMixin):
                 self.itemsToShapes[item] = s
                 self.shapesToItems[s] = item
                 self.labelList.addItem(item)
+                self.labelList.setCurrentItem(item)
                 for action in self.actions.onShapesPresent:
                     action.setEnabled(True)
         else:
+            print("Add item")
             shape.paintLabel = self.paintLabelsOption.isChecked()
             item = HashableQListWidgetItem(shape.label)
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
@@ -776,6 +783,8 @@ class MainWindow(QMainWindow, WindowMixin):
             self.itemsToShapes[item] = shape
             self.shapesToItems[shape] = item
             self.labelList.addItem(item)
+            self.labelList.setCurrentItem(item)
+            print(self.labelList)
             for action in self.actions.onShapesPresent:
                 action.setEnabled(True)
 
