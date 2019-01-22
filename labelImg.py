@@ -1181,10 +1181,12 @@ class MainWindow(QMainWindow, WindowMixin):
 
         dirpath = ustr(QFileDialog.getExistingDirectory(self,
                                                        '%s - Save annotations to the directory' % __appname__, path,  QFileDialog.ShowDirsOnly
-                                                       | QFileDialog.DontResolveSymlinks))
+                                                       | QFileDialog.DontResolveSymlinks
+                                                     ))
 
         if dirpath is not None and len(dirpath) > 1:
-            self.defaultSaveDir = dirpath
+            self.defaultSaveDir = dirpath.replace('/', os.sep)
+            # print(self.defaultSaveDir)
 
         self.statusBar().showMessage('%s . Annotation will be saved to %s' %
                                      ('Change saved folder', self.defaultSaveDir))
@@ -1240,6 +1242,8 @@ class MainWindow(QMainWindow, WindowMixin):
         """Delete current image and label file (if exist)"""
         if self.deleteImageDialog():
             os.remove(self.filePath)
+            imgFileName = os.path.basename(self.filePath)
+            savedFileName = os.path.splitext(imgFileName)[0] + ".xml"
             self.fileListWidget.clear()
             # index = self.mImgList.index(self.imgPath)
             index = self.mImgList.index(self.filePath)
@@ -1253,10 +1257,8 @@ class MainWindow(QMainWindow, WindowMixin):
             # print(len(self.mImgList))
             # if self.labelFile:
             if self.filePath:
-                imgFileName = os.path.basename(self.filePath)
-                savedFileName = os.path.splitext(imgFileName)[0] + ".xml"
-                savedPath = "/".join([self.defaultSaveDir, savedFileName])
-                print(savedPath)
+                savedPath = (os.sep).join([self.defaultSaveDir, savedFileName])
+                # print(savedPath)
                 if os.path.exists(savedPath):
                     os.remove(savedPath)
             self.openNextImg()
