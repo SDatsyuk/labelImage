@@ -580,7 +580,6 @@ class MainWindow(QMainWindow, WindowMixin):
         self.statusBar().showMessage(message, delay)
 
     def resetState(self):
-        print('resetState')
         self.itemsToShapes.clear()
         self.shapesToItems.clear()
         self.labelList.clear()
@@ -592,7 +591,6 @@ class MainWindow(QMainWindow, WindowMixin):
 
     def currentItem(self):
         items = self.labelList.selectedItems()
-        print("Items: ", items)
         if items:
             return items[0]
         return None
@@ -681,12 +679,8 @@ class MainWindow(QMainWindow, WindowMixin):
             return
         item = self.currentItem()
         # items = self.canvas.selectedShape
-        print(self.labelList)
-        print(self.labelList.selectedItems())
-        # print(item)
         text = self.labelDialog.popUp(item.text())
         if text is not None:
-            print(self.labelList.selectedItems())
             for item in [self.shapesToItems[i] for i in self.canvas.selectedShape]:
                 item.setText(text)
                 item.setBackground(generateColorByText(text))
@@ -758,7 +752,7 @@ class MainWindow(QMainWindow, WindowMixin):
         self.actions.shapeFillColor.setEnabled(selected)
 
     def addLabel(self, shape):
-        print(shape)
+        
         if isinstance(shape, list):
             for s in shape:
                 s.paintLabel = self.paintLabelsOption.isChecked()
@@ -774,7 +768,6 @@ class MainWindow(QMainWindow, WindowMixin):
                 for action in self.actions.onShapesPresent:
                     action.setEnabled(True)
         else:
-            print("Add item")
             shape.paintLabel = self.paintLabelsOption.isChecked()
             item = HashableQListWidgetItem(shape.label)
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
@@ -784,7 +777,6 @@ class MainWindow(QMainWindow, WindowMixin):
             self.shapesToItems[shape] = item
             self.labelList.addItem(item)
             self.labelList.setCurrentItem(item)
-            print(self.labelList)
             for action in self.actions.onShapesPresent:
                 action.setEnabled(True)
 
@@ -1254,22 +1246,22 @@ class MainWindow(QMainWindow, WindowMixin):
             imgFileName = os.path.basename(self.filePath)
             savedFileName = os.path.splitext(imgFileName)[0] + ".xml"
             self.fileListWidget.clear()
-            # index = self.mImgList.index(self.imgPath)
+            if self.filePath:
+                savedPath = (os.sep).join([self.defaultSaveDir, savedFileName])
+                # print(savedPath)
+                if os.path.exists(savedPath):
+                    os.remove(savedPath)
+
             index = self.mImgList.index(self.filePath)
+            print("Image index:", index)
             self.mImgList.remove(self.filePath)
             if len(self.mImgList) == 0:
                 return
             elif len(self.mImgList) < index+1:
                 self.filePath = self.mImgList[0]
             else:
-                self.filePath = self.mImgList[index]
-            # print(len(self.mImgList))
-            # if self.labelFile:
-            if self.filePath:
-                savedPath = (os.sep).join([self.defaultSaveDir, savedFileName])
-                # print(savedPath)
-                if os.path.exists(savedPath):
-                    os.remove(savedPath)
+                self.filePath = self.mImgList[index-1] if index != 0 else None
+            
             self.openNextImg()
             for imgPath in self.mImgList:
                 item = QListWidgetItem(imgPath)
